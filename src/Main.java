@@ -4,13 +4,13 @@ public class Main {
 
 
     public static void main2(String[] args) {
-        ABR<String> a;
+        ARN<String> a;
         String nb;
         String input;
         boolean b = true;
         Scanner sc = new Scanner(System.in);
 
-        a = new ABR<String>();
+        a = new ARN<String>();
 
         while(b) {
             System.out.println(a);
@@ -38,12 +38,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ABR<String> a;
+        ARN<String> a;
         String input;
         boolean b = true;
         boolean ajouter = true;
         Scanner sc = new Scanner(System.in);
-        a = new ABR<>();
+        a = new ARN<>();
         while(b) {
             System.out.println(a);
             if (ajouter) {

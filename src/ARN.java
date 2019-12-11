@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  *
  * @param <E> le type des clés stockées dans l'arbre
  */
-public class ABR<E> extends AbstractCollection<E> {
+public class ARN<E> extends AbstractCollection<E> {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     private Noeud racine;
@@ -80,21 +80,21 @@ public class ABR<E> extends AbstractCollection<E> {
     }
 
     // Constructeurs
-    public ABR() {
+    public ARN() {
         sentinelle = new Noeud((E)"nil");
         racine = sentinelle;
         cmp = (x, y) -> ((Comparable<E>) x).compareTo(y);
         taille = 0;
     }
 
-    public ABR(Comparator<? super E> cmp) {
+    public ARN(Comparator<? super E> cmp) {
         sentinelle = new Noeud(null);
         racine = sentinelle;
         taille = 0;
         this.cmp = cmp;
     }
 
-    public ABR(Collection<? extends E> c) {
+    public ARN(Collection<? extends E> c) {
         this();
         for (E e : c) this.add(e);
     }
@@ -334,7 +334,6 @@ public class ABR<E> extends AbstractCollection<E> {
 
     @Override
     public boolean add(E e) {
-        System.out.println("add début");
         Noeud z = new Noeud(e);
         Noeud y = sentinelle;
         Noeud x = racine;
@@ -351,12 +350,10 @@ public class ABR<E> extends AbstractCollection<E> {
         z.droit = sentinelle;
         z.couleur = "R";
         insertionCorrection(z);
-        System.out.println("add fin");
         return true;
     }
 
     private void insertionCorrection(Noeud z) {
-        System.out.println("add correction début");
         Noeud y;
         while (z.pere.couleur == "R") {
             System.out.println("?");
@@ -395,7 +392,6 @@ public class ABR<E> extends AbstractCollection<E> {
             }
         }
         racine.couleur = "N";
-        System.out.println("add correction fin");
     }
 
     @Override
