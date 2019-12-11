@@ -122,35 +122,76 @@ public class ABR<E> extends AbstractCollection<E> {
     }
 
     private Noeud supprimer(Noeud z) {
-        Noeud s;
-        if (z != sentinelle) {
-            if (z.droit != sentinelle) {
-                s = z.suivant();
-                z.cle = s.cle;
-                donPere(s, s.droit);
-                s.gauche = s.droit = s.pere = sentinelle;
-            } else {
-                donPere(z, z.gauche);
-                z.gauche = z.droit = z.pere = sentinelle;
-            }
+        Noeud x, y;
+        if (z.gauche == sentinelle || z.droit == sentinelle) y = z;
+        else y = z.suivant();
+        if (y.gauche != sentinelle) x = y.gauche;
+        else x = y.droit;
+        x.pere = y.pere;
+        if (y.pere == sentinelle) racine = x;
+        else {
+            if (y == y.pere.gauche) y.pere.gauche = x;
+            else y.pere.droit = x;
         }
+        if (y!=z) z.cle = y.cle;
+        if (y.couleur == "N") suppressionCorrection(x);
         return null;
     }
 
-    private void donPere(Noeud ancienFils, Noeud nouveauFils) {
-        Noeud pere;
-        pere = ancienFils.pere;
-        if (pere != sentinelle) {
-            if (pere.gauche == ancienFils) pere.gauche = nouveauFils;
-            else pere.droit = nouveauFils;
-        } else racine = nouveauFils;
-        if (nouveauFils != sentinelle) nouveauFils.pere = pere;
-    }
-
-    private void changementPere(Noeud fils, Noeud pere) {
-        if (cmp.compare(pere.cle, fils.cle) < 0) pere.droit = fils;
-        else pere.gauche = fils;
-        fils.pere = pere;
+    private void suppressionCorrection(Noeud x) {
+        Noeud w;
+        while (x != racine && x.couleur == "N") {
+            if (x == x.pere.gauche) {
+                w = x.pere.droit; //frere de x
+                if (w.couleur == "R") {
+                    w.couleur = "N";
+                    x.pere.couleur = "R";
+                    rotationGauche(x.pere);
+                    w = x.pere.droit;
+                }
+                if (w.gauche.couleur == "N" && w.droit.couleur == "N") {
+                    w.couleur = "R";
+                    x = x.pere;
+                } else {
+                    if (w.droit.couleur == "N") {
+                        w.gauche.couleur = "N";
+                        w.couleur = "R";
+                        rotationDroite(w);
+                        w = x.pere.droit;
+                    }
+                    w.couleur = x.pere.couleur;
+                    x.pere.couleur = "N";
+                    w.droit.couleur = "N";
+                    rotationGauche(x.pere);
+                    x = racine;
+                }
+            } else {
+                w = x.pere.gauche; //frere de x
+                if (w.couleur == "R") {
+                    w.couleur = "N";
+                    x.pere.couleur = "R";
+                    rotationDroite(x.pere);
+                    w = x.pere.gauche;
+                }
+                if (w.droit.couleur == "N" && w.gauche.couleur == "N") {
+                    w.couleur = "R";
+                    x = x.pere;
+                } else {
+                    if (w.gauche.couleur == "N") {
+                        w.droit.couleur = "N";
+                        w.couleur = "R";
+                        rotationGauche(w);
+                        w = x.pere.gauche;
+                    }
+                    w.couleur = x.pere.couleur;
+                    x.pere.couleur = "N";
+                    w.gauche.couleur = "N";
+                    rotationDroite(x.pere);
+                    x = racine;
+                }
+            }
+        }
+        x.couleur = "N";
     }
 
     private class ABRIterator implements Iterator<E> {
@@ -293,6 +334,7 @@ public class ABR<E> extends AbstractCollection<E> {
 
     @Override
     public boolean add(E e) {
+        System.out.println("add début");
         Noeud z = new Noeud(e);
         Noeud y = sentinelle;
         Noeud x = racine;
@@ -309,12 +351,15 @@ public class ABR<E> extends AbstractCollection<E> {
         z.droit = sentinelle;
         z.couleur = "R";
         insertionCorrection(z);
+        System.out.println("add fin");
         return true;
     }
 
     private void insertionCorrection(Noeud z) {
+        System.out.println("add correction début");
         Noeud y;
         while (z.pere.couleur == "R") {
+            System.out.println("?");
             if (z.pere == z.pere.pere.gauche) {
                 y = z.pere.pere.droit;
                 if (y.couleur == "R") {
@@ -339,7 +384,7 @@ public class ABR<E> extends AbstractCollection<E> {
                     z.pere.pere.couleur = "R";
                     z = z.pere.pere;
                 } else {
-                    if (z==z.pere.pere.gauche) {
+                    if (z==z.pere.gauche) {
                         z = z.pere;
                         rotationDroite(z);
                     }
@@ -350,6 +395,7 @@ public class ABR<E> extends AbstractCollection<E> {
             }
         }
         racine.couleur = "N";
+        System.out.println("add correction fin");
     }
 
     @Override
