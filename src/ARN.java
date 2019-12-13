@@ -19,25 +19,50 @@ import java.util.NoSuchElementException;
  * @param <E> le type des clés stockées dans l'arbre
  */
 public class ARN<E> extends AbstractCollection<E> {
+    /**
+     * Permettent de colorier en rouge les noeuds correspondants.
+     */
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
-    private Noeud racine;
+
+    /**
+     * Taille de l'arbre
+     */
     private int taille;
+    /**
+     * Racine de l'arbre, l'élément le plus à gauche dans la représentation,
+     * le "père de tous les noeuds"
+     */
+    private Noeud racine;
+    /**
+     * Permet de comparer deux clés des noeuds afin de les classer dans l'arbre
+     */
     private Comparator<? super E> cmp;
+    /**
+     * Correspond aux feuilles de l'arbre, elles comblent les "trous" afin de que
+     * chaque noeud possède bien deux fils
+     */
     private Noeud sentinelle;
 
+    /**
+     * La classe Noeud représente les éléments de l'arbre, ils possèdent une clé qui
+     * permet de les classer dans l'arbre, un fils gauche et droit, un père et une
+     * couleur, qui est spécifique  aux arbre rouge-noir et qui va permettre d'équilibrer
+     * l'arbre à l'aide de règles qui répartissent réorganisent les noeuds en gardant
+     * ses propriétés d'arbre binaire.
+     */
     private class Noeud {
 
         E cle;
         Noeud gauche;
         Noeud droit;
         Noeud pere;
-        String couleur;
+        char couleur;
 
         Noeud(E cle) {
             pere = droit = gauche = sentinelle;
             this.cle = cle;
-            this.couleur = "N";
+            this.couleur = 'N';
         }
 
         /**
@@ -61,7 +86,7 @@ public class ARN<E> extends AbstractCollection<E> {
         }
 
         /**
-         * Donne l'élément dont la clé suit la clé de this
+         * Donne l'élément dont la clé suit celle de this
          * @return
          */
         Noeud suivant() {
@@ -134,64 +159,64 @@ public class ARN<E> extends AbstractCollection<E> {
             else y.pere.droit = x;
         }
         if (y!=z) z.cle = y.cle;
-        if (y.couleur == "N") suppressionCorrection(x);
+        if (y.couleur == 'N') suppressionCorrection(x);
         return null;
     }
 
     private void suppressionCorrection(Noeud x) {
         Noeud w;
-        while (x != racine && x.couleur == "N") {
+        while (x != racine && x.couleur == 'N') {
             if (x == x.pere.gauche) {
                 w = x.pere.droit; //frere de x
-                if (w.couleur == "R") {
-                    w.couleur = "N";
-                    x.pere.couleur = "R";
+                if (w.couleur == 'R') {
+                    w.couleur = 'N';
+                    x.pere.couleur = 'R';
                     rotationGauche(x.pere);
                     w = x.pere.droit;
                 }
-                if (w.gauche.couleur == "N" && w.droit.couleur == "N") {
-                    w.couleur = "R";
+                if (w.gauche.couleur == 'N' && w.droit.couleur == 'N') {
+                    w.couleur = 'R';
                     x = x.pere;
                 } else {
-                    if (w.droit.couleur == "N") {
-                        w.gauche.couleur = "N";
-                        w.couleur = "R";
+                    if (w.droit.couleur == 'N') {
+                        w.gauche.couleur = 'N';
+                        w.couleur = 'R';
                         rotationDroite(w);
                         w = x.pere.droit;
                     }
                     w.couleur = x.pere.couleur;
-                    x.pere.couleur = "N";
-                    w.droit.couleur = "N";
+                    x.pere.couleur = 'N';
+                    w.droit.couleur = 'N';
                     rotationGauche(x.pere);
                     x = racine;
                 }
             } else {
                 w = x.pere.gauche; //frere de x
-                if (w.couleur == "R") {
-                    w.couleur = "N";
-                    x.pere.couleur = "R";
+                if (w.couleur == 'R') {
+                    w.couleur = 'N';
+                    x.pere.couleur = 'R';
                     rotationDroite(x.pere);
                     w = x.pere.gauche;
                 }
-                if (w.droit.couleur == "N" && w.gauche.couleur == "N") {
-                    w.couleur = "R";
+                if (w.droit.couleur == 'N' && w.gauche.couleur == 'N') {
+                    w.couleur = 'R';
                     x = x.pere;
                 } else {
-                    if (w.gauche.couleur == "N") {
-                        w.droit.couleur = "N";
-                        w.couleur = "R";
+                    if (w.gauche.couleur == 'N') {
+                        w.droit.couleur = 'N';
+                        w.couleur = 'R';
                         rotationGauche(w);
                         w = x.pere.gauche;
                     }
                     w.couleur = x.pere.couleur;
-                    x.pere.couleur = "N";
-                    w.gauche.couleur = "N";
+                    x.pere.couleur = 'N';
+                    w.gauche.couleur = 'N';
                     rotationDroite(x.pere);
                     x = racine;
                 }
             }
         }
-        x.couleur = "N";
+        x.couleur = 'N';
     }
 
     private class ABRIterator implements Iterator<E> {
@@ -235,7 +260,7 @@ public class ARN<E> extends AbstractCollection<E> {
     }
 
     private void toString(Noeud x, StringBuffer buf, String path, int len) {
-        if (x == null)
+        if (x == sentinelle)
             return;
         toString(x.droit, buf, path + "D", len);
         for (int i = 0; i < path.length(); i++) {
@@ -248,7 +273,7 @@ public class ARN<E> extends AbstractCollection<E> {
                 c = '|';
             buf.append(c);
         }
-        if (x.couleur == "R") buf.append("-- "+ ANSI_RED + x.cle.toString() + ANSI_RESET);
+        if (x.couleur == 'R') buf.append("-- "+ ANSI_RED + x.cle.toString() + ANSI_RESET);
         else buf.append("-- " + x.cle.toString());
         if (x.gauche != null || x.droit != null) {
             buf.append(" --");
@@ -332,8 +357,7 @@ public class ARN<E> extends AbstractCollection<E> {
         n.pere = y;
     }
 
-    @Override
-    public boolean add(E e) {
+    private void ajouter(E e) {
         Noeud z = new Noeud(e);
         Noeud y = sentinelle;
         Noeud x = racine;
@@ -348,50 +372,56 @@ public class ARN<E> extends AbstractCollection<E> {
         else y.droit = z;
         z.gauche = sentinelle;
         z.droit = sentinelle;
-        z.couleur = "R";
+        z.couleur = 'R';
         insertionCorrection(z);
+    }
+
+    @Override
+    public boolean add(E e) {
+        Noeud z = new Noeud(e);
+        if (z == null) return false;
+        ajouter(e);
         return true;
     }
 
     private void insertionCorrection(Noeud z) {
         Noeud y;
-        while (z.pere.couleur == "R") {
-            System.out.println("?");
+        while (z.pere.couleur == 'R') {
             if (z.pere == z.pere.pere.gauche) {
                 y = z.pere.pere.droit;
-                if (y.couleur == "R") {
-                    z.pere.couleur = "N";
-                    y.couleur = "N";
-                    z.pere.pere.couleur = "R";
+                if (y.couleur == 'R') {
+                    z.pere.couleur = 'N';
+                    y.couleur = 'N';
+                    z.pere.pere.couleur = 'R';
                     z = z.pere.pere;
                 } else {
                     if (z==z.pere.pere.droit) {
                         z = z.pere;
                         rotationGauche(z);
                     }
-                    z.pere.couleur = "N";
-                    z.pere.pere.couleur = "R";
+                    z.pere.couleur = 'N';
+                    z.pere.pere.couleur = 'R';
                     rotationDroite(z.pere.pere);
                 }
             } else {
                 y = z.pere.pere.gauche;
-                if (y.couleur == "R") {
-                    z.pere.couleur = "N";
-                    y.couleur = "N";
-                    z.pere.pere.couleur = "R";
+                if (y.couleur == 'R') {
+                    z.pere.couleur = 'N';
+                    y.couleur = 'N';
+                    z.pere.pere.couleur = 'R';
                     z = z.pere.pere;
                 } else {
                     if (z==z.pere.gauche) {
                         z = z.pere;
                         rotationDroite(z);
                     }
-                    z.pere.couleur = "N";
-                    z.pere.pere.couleur = "R";
+                    z.pere.couleur = 'N';
+                    z.pere.pere.couleur = 'R';
                     rotationGauche(z.pere.pere);
                 }
             }
         }
-        racine.couleur = "N";
+        racine.couleur = 'N';
     }
 
     @Override
