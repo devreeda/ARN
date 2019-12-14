@@ -90,12 +90,14 @@ public class ARN<E> extends AbstractCollection<E> {
          * @return
          */
         Noeud suivant() {
-            Noeud x;
-
-            x = this;
+            Noeud x = this;
             if (droit != sentinelle) return droit.minimum();
-            while (x.pere != sentinelle && x == x.pere.droit) x = x.pere;
-            return x;
+            Noeud y = x.pere;
+            while (y != sentinelle && x == y.droit) {
+                x=y;
+                y=y.pere;
+            }
+            return y;
         }
 
         @Override
@@ -226,7 +228,7 @@ public class ARN<E> extends AbstractCollection<E> {
             super();
             n = sentinelle;
             if (racine != sentinelle) p = racine.minimum();
-            else p = null;
+            else p = sentinelle;
         }
 
         @Override
