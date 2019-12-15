@@ -90,7 +90,7 @@ public class ARN<E> extends AbstractCollection<E> {
         }
 
         /**
-         * Donne le noeud qui suit la clé de this
+         * Donne le noeud qui suit la clé de this / du Noeud appelant
          * @return
          */
         Noeud suivant() {
@@ -161,7 +161,7 @@ public class ARN<E> extends AbstractCollection<E> {
     /**
      * Recherche un Noeud selon la clé
      * @param k la clé
-     * @return La noeud si la clé existe, sinon la sentinelle
+     * @return Le noeud si la clé existe, sinon la sentinelle
      */
     private Noeud rechercher(E k) {
         Noeud x;
@@ -269,7 +269,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
         /**
          * Vérifie si le Noeud possède un successeur
-         * @return retourne le successeur ou laa sentinelle par défaut
+         * @return retourne le successeur ou la sentinelle par défaut
          */
         @Override
         public boolean hasNext() {
@@ -357,8 +357,8 @@ public class ARN<E> extends AbstractCollection<E> {
     }
 
     /**
-     * Vérifie si l'arbre est vite
-     * @return Un boolean égal à true si l'arbre est vide/la hauteur est null
+     * Vérifie si l'arbre est vide
+     * @return Un boolean égal à true si l'arbre est vide/la hauteur est nulle
      */
     @Override
     public boolean isEmpty() {
@@ -367,7 +367,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
     /**
      * Surcharge de la méthode contains de la classe abstraite AbstractCollection.
-     * Vérifie si l'arbre contient un Noeud passé en paraamètre.
+     * Vérifie si l'arbre contient un Noeud passé en paramètre.
      * @param o Un Noeud
      * @return Un boolean égal à vrai si la recherche renvoie un Noeud non sentinelle.
      */
@@ -378,7 +378,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
     /**
      * Surcharge de la méthode toArray de la classe abstraite AbstractCollection.
-     * Appelle la méthode privé recArray sur un Array de taille = hauteur de l'arbre.
+     * Appelle la méthode privée recArray sur un Array de taille = hauteur de l'arbre.
      * @return
      */
     @Override
