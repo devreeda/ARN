@@ -59,6 +59,10 @@ public class ARN<E> extends AbstractCollection<E> {
         Noeud pere;
         char couleur;
 
+        /**
+         * Constructeur par la clé, celui que l'on utilisera pour insérer un noeud
+         * @param cle
+         */
         Noeud(E cle) {
             pere = droit = gauche = sentinelle;
             this.cle = cle;
@@ -66,7 +70,7 @@ public class ARN<E> extends AbstractCollection<E> {
         }
 
         /**
-         * donne l'élément avec la clé max
+         * Donne l'élément avec la clé maximale
          * @return
          */
         Noeud maximum() {
@@ -76,7 +80,7 @@ public class ARN<E> extends AbstractCollection<E> {
         }
 
         /**
-         * donne l'élément avec la clé min
+         * Donne l'élément avec la clé minimale
          * @return
          */
         Noeud minimum() {
@@ -86,7 +90,7 @@ public class ARN<E> extends AbstractCollection<E> {
         }
 
         /**
-         * Donne l'élément dont la clé suit celle de this
+         * Donne le noeud qui suit la clé de this
          * @return
          */
         Noeud suivant() {
@@ -106,7 +110,9 @@ public class ARN<E> extends AbstractCollection<E> {
         }
     }
 
-    // Constructeurs
+    /**
+     * Constructueur par défaut, construit un arbre avec une sentinelle comme racine
+     */
     public ARN() {
         sentinelle = new Noeud((E)"nil");
         racine = sentinelle;
@@ -114,6 +120,10 @@ public class ARN<E> extends AbstractCollection<E> {
         taille = 0;
     }
 
+    /**
+     * Constructeur par comparator, si on veut personnaliser la relation d'ordre
+     * @param cmp
+     */
     public ARN(Comparator<? super E> cmp) {
         sentinelle = new Noeud(null);
         racine = sentinelle;
@@ -121,22 +131,38 @@ public class ARN<E> extends AbstractCollection<E> {
         this.cmp = cmp;
     }
 
+    /**
+     * Constructeur avec une collection d'éléments en paramètre, que l'on ajoute dans l'arbre en tant que clé
+     * @param c
+     */
     public ARN(Collection<? extends E> c) {
         this();
         for (E e : c) this.add(e);
     }
 
+    /**
+     * Surcharge de la méthode iterator()
+     * @return renvoie une instance de l'interface ABRIterator
+     */
     @Override
     public Iterator<E> iterator() {
         return new ABRIterator();
     }
 
+    /**
+     *
+     * @return Retourne la taille de l'arbre
+     */
     @Override
     public int size() {
         return taille;
     }
 
-    // Quelques méthodes utiles
+    /**
+     * Recherche un Noeud selon la clé
+     * @param k la clé
+     * @return La noeud si la clé existe, sinon la sentinelle
+     */
     private Noeud rechercher(E k) {
         Noeud x;
 
@@ -148,7 +174,11 @@ public class ARN<E> extends AbstractCollection<E> {
         return x;
     }
 
-    private Noeud supprimer(Noeud z) {
+    /**
+     * Suppression d'un Noeud si il existe dans l'arbre
+     * @param z le Noeud à supprimer
+     */
+    private void supprimer(Noeud z) {
         Noeud x, y;
         if (z.gauche == sentinelle || z.droit == sentinelle) y = z;
         else y = z.suivant();
@@ -162,9 +192,12 @@ public class ARN<E> extends AbstractCollection<E> {
         }
         if (y!=z) z.cle = y.cle;
         if (y.couleur == 'N') suppressionCorrection(x);
-        return null;
     }
 
+    /**
+     * Corrige la structure de l'arbre de sorte à ce qu'il garde ses propriétés d'arbre rouge et noir
+     * @param x
+     */
     private void suppressionCorrection(Noeud x) {
         Noeud w;
         while (x != racine && x.couleur == 'N') {
@@ -221,6 +254,9 @@ public class ARN<E> extends AbstractCollection<E> {
         x.couleur = 'N';
     }
 
+    /**
+     * La classe Iterateur de l'arbre pour pouvoir le parcourir
+     */
     private class ABRIterator implements Iterator<E> {
         Noeud n, p;
 
@@ -231,11 +267,19 @@ public class ARN<E> extends AbstractCollection<E> {
             else p = sentinelle;
         }
 
+        /**
+         * Vérifie si le Noeud possède un successeur
+         * @return retourne le successeur ou laa sentinelle par défaut
+         */
         @Override
         public boolean hasNext() {
             return p != sentinelle;
         }
 
+        /**
+         * Surcharge de la méthode next de l'interface Iterator. Appelle la méthode suivant de la classe Noeud.
+         * @return L'élément suivant si il existe, une exception sinon
+         */
         @Override
         public E next() {
             if (p == null) throw new NoSuchElementException();
@@ -244,6 +288,10 @@ public class ARN<E> extends AbstractCollection<E> {
             return n.cle;
         }
 
+        /**
+         * Surcharge de la méthode remove de l'interface Iterator.
+         * Appelle la méthode supprimer de la classe Noeud, renvoie une exception si l'élément est null.
+         */
         @Override
         public void remove() {
             if (n == null) throw new IllegalStateException();
@@ -254,6 +302,10 @@ public class ARN<E> extends AbstractCollection<E> {
 
     // Pour un "joli" affichage
 
+    /**
+     * Affichage de l'arbre sans passer de paramètre.
+     * @return Un String de l'arbre complet
+     */
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
@@ -261,6 +313,13 @@ public class ARN<E> extends AbstractCollection<E> {
         return buf.toString();
     }
 
+    /**
+     * Affichage de l'arbre en passant des parmètres
+     * @param x Racine du sous-arbre/arbre
+     * @param buf Le StringBuffer
+     * @param path Le chemin
+     * @param len La longueur de l'arbre
+     */
     private void toString(Noeud x, StringBuffer buf, String path, int len) {
         if (x == sentinelle)
             return;
@@ -287,21 +346,41 @@ public class ARN<E> extends AbstractCollection<E> {
         toString(x.gauche, buf, path + "G", len);
     }
 
+    /**
+     * Affiche la hauteur de l'arbre de racine x
+     * @param x La racine de l'arbre/sous-arbre
+     * @return La longueur max de l'arbre = sa hauteur
+     */
     private int maxStrLen(Noeud x) {
         return x == sentinelle ? 0 : Math.max(x.cle.toString().length(),
                 Math.max(maxStrLen(x.gauche), maxStrLen(x.droit)));
     }
 
+    /**
+     * Vérifie si l'arbre est vite
+     * @return Un boolean égal à true si l'arbre est vide/la hauteur est null
+     */
     @Override
     public boolean isEmpty() {
         return taille == 0;
     }
 
+    /**
+     * Surcharge de la méthode contains de la classe abstraite AbstractCollection.
+     * Vérifie si l'arbre contient un Noeud passé en paraamètre.
+     * @param o Un Noeud
+     * @return Un boolean égal à vrai si la recherche renvoie un Noeud non sentinelle.
+     */
     @Override
     public boolean contains(Object o) {
         return rechercher((E) o) != sentinelle;
     }
 
+    /**
+     * Surcharge de la méthode toArray de la classe abstraite AbstractCollection.
+     * Appelle la méthode privé recArray sur un Array de taille = hauteur de l'arbre.
+     * @return
+     */
     @Override
     public Object[] toArray() {
         Object[] retour = new Object[taille];
@@ -309,20 +388,35 @@ public class ARN<E> extends AbstractCollection<E> {
         return retour;
     }
 
+    /**
+     * Ajoute les éléments de l'arbre dans un tableau dans l'ordre croissant du comparateur.
+     * @param n Un Noeud
+     * @param t Un tableau
+     */
     private void recArray(Noeud n, Object[] t) {
-        if (n != null) {
+        if (n != sentinelle) {
             recArray(n.gauche, t);
             ajout(t, n);
             recArray(n.droit, t);
         }
     }
 
+    /**
+     * Ajout de Noeud dans un tableau passé en paramètre
+     * @param t Tableau
+     * @param o Noeud
+     */
     private void ajout(Object[] t, Object o) {
         int i;
         for (i = 0; t[i] != sentinelle; ++i) ;
         t[i] = o;
     }
 
+    /**
+     * Méthode de rotation à gauche autour d'un noeud qui permet le recalibrage d'un ARN afin de respecter ses propriétés
+     * lors de l'insertion ou de la suppression.
+     * @param n Un Noeud
+     */
     private void rotationGauche(Noeud n) {
         Noeud y = n.droit;
         n.droit = y.gauche;
@@ -342,6 +436,11 @@ public class ARN<E> extends AbstractCollection<E> {
         n.pere = y;
     }
 
+    /**
+     * Méthode de rotation à droite autour d'un noeud qui permet le recalibrage d'un ARN afin de respecter ses propriétés
+     * lors de l'insertion ou de la suppression.
+     * @param n Un Noeud
+     */
     private void rotationDroite(Noeud n) {
         Noeud y = n.gauche;
         n.gauche = y.droit;
@@ -359,6 +458,11 @@ public class ARN<E> extends AbstractCollection<E> {
         n.pere = y;
     }
 
+    /**
+     * Méthode d'ajout d'un Noeud dans un tableau, appelle la méthode insertionCorrection afin de respecter
+     * les propriétés de l'ARN.
+     * @param e La clé du Noeud à ajouter
+     */
     private void ajouter(E e) {
         Noeud z = new Noeud(e);
         Noeud y = sentinelle;
@@ -378,6 +482,12 @@ public class ARN<E> extends AbstractCollection<E> {
         insertionCorrection(z);
     }
 
+    /**
+     * Surcharge de la méthode add de l'interface AbstractCorrection qui appelle la méthode privée ajouter
+     * quand le Noeud à ajouter n'est pas null.
+     * @param e Clé du Noeud à ajouter
+     * @return Un boolean égal à vrai quand le noeud a bien été ajouté
+     */
     @Override
     public boolean add(E e) {
         Noeud z = new Noeud(e);
@@ -386,6 +496,10 @@ public class ARN<E> extends AbstractCollection<E> {
         return true;
     }
 
+    /**
+     * Méthode de correction de l'insertion afin que celle-ci respecte les propriétés d'un ARN
+     * @param z Le Noeud inséré dont il faut corriger l'insertion
+     */
     private void insertionCorrection(Noeud z) {
         Noeud y;
         while (z.pere.couleur == 'R') {
@@ -426,6 +540,12 @@ public class ARN<E> extends AbstractCollection<E> {
         racine.couleur = 'N';
     }
 
+    /**
+     * Surcharge de la méthode remove qui appelle la méthode privée supprimer quand le noeud en question n'est pas
+     * une sentinelle.
+     * @param o Objet à ajouter
+     * @return Un boolean égal à vrai si la suppression a bien eu lieu
+     */
     @Override
     public boolean remove(Object o) {
         Noeud z = rechercher((E) o);
@@ -435,271 +555,3 @@ public class ARN<E> extends AbstractCollection<E> {
     }
 
 }
-/*
- * package ArbreBinaire;
-
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-/**
- * <p>
- * Implantation de l'interface Collection basée sur les arbres binaires de
- * recherche. Les éléments sont ordonnés soit en utilisant l'ordre naturel (cf
- * Comparable) soit avec un Comparator fourni à la création.
- * </p>
- *
- * <p>
- * Certaines méthodes de AbstractCollection doivent être surchargées pour plus
- * d'efficacité.
- * </p>
- *
- * @param <E>
- *            le type des clés stockées dans l'arbre
- *
-public class ABR<E> extends AbstractCollection<E> {
-    private Noeud racine;
-    private int taille;
-    private Comparator<? super E> cmp;
-
-    private class Noeud {
-        E cle;
-        Noeud gauche;
-        Noeud droit;
-        Noeud pere;
-
-        Noeud(E cle) {
-            pere = droit = gauche = null;
-            this.cle = cle;
-        }
-
-        Noeud maximum() {
-            Noeud n = this;
-            while(n.droit != null) n = n.droit;
-            return n;
-        }
-
-        Noeud minimum() {
-            Noeud n = this;
-            while(n.gauche != null) n = n.gauche;
-            return n;
-        }
-
-        Noeud suivant() {
-            Noeud x;
-
-            x = this;
-            if(droit != null) return droit.minimum();
-            while(x.pere != null && x == x.pere.droit) x = x.pere;
-            return x.pere;
-        }
-
-        @Override
-        public String toString() {
-            return cle.toString();
-        }
-    }
-
-    // Consructeurs
-    public ABR() {
-        racine = null;
-        cmp = (x, y) -> ((Comparable<E>)x).compareTo(y);
-        taille = 0;
-    }
-
-    public ABR(Comparator<? super E> cmp) {
-        racine = null;
-        taille = 0;
-        this.cmp = cmp;
-    }
-
-    public ABR(Collection<? extends E> c) {
-        this();
-        for(E e: c) this.add(e);
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        return new ABRIterator();
-    }
-
-    @Override
-    public int size() {
-        return taille;
-    }
-
-    // Quelques méthodes utiles
-    private Noeud rechercher(E k) {
-        Noeud x;
-
-        x = racine;
-        while(x != null && !x.cle.equals(k)) {
-            if(cmp.compare(k, x.cle) < 0) x = x.gauche;
-            else x = x.droit;
-        }
-        return x;
-    }
-
-    private Noeud supprimer(Noeud z) {
-        Noeud s;
-        if(z != null) {
-            if(z.droit != null) {
-                s = z.suivant();
-                z.cle = s.cle;
-                donPere(s, s.droit);
-                s.gauche = s.droit = s.pere = null;
-            } else {
-                donPere(z, z.gauche);
-                z.gauche = z.droit = z.pere = null;
-            }
-        }
-        return null;
-    }
-
-    private void donPere(Noeud ancienFils, Noeud nouveauFils) {
-        Noeud pere;
-        pere = ancienFils.pere;
-        if(pere != null) {
-            if(pere.gauche == ancienFils) pere.gauche = nouveauFils;
-            else pere.droit = nouveauFils;
-        } else racine = nouveauFils;
-        if(nouveauFils != null) nouveauFils.pere = pere;
-    }
-
-    private void changementPere(Noeud fils, Noeud pere) {
-        if(cmp.compare(pere.cle, fils.cle) < 0) pere.droit = fils;
-        else pere.gauche = fils;
-        fils.pere = pere;
-    }
-
-    private class ABRIterator implements Iterator<E> {
-        Noeud n, p;
-        public ABRIterator() {
-            super();
-            n = null;
-            if(racine != null) p = racine.minimum();
-            else p = null;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return p != null;
-        }
-        @Override
-        public E next() {
-            if(p == null) throw new NoSuchElementException();
-            n = p;
-            p = p.suivant();
-            return n.cle;
-        }
-        @Override
-        public void remove() {
-            if(n == null) throw new IllegalStateException();
-            supprimer(n);
-            n = null;
-        }
-    }
-
-    // Pour un "joli" affichage
-
-    @Override
-    public String toString() {
-        StringBuffer buf = new StringBuffer();
-        toString(racine, buf, "", maxStrLen(racine));
-        return buf.toString();
-    }
-
-    private void toString(Noeud x, StringBuffer buf, String path, int len) {
-        if (x == null)
-            return;
-        toString(x.droit, buf, path + "D", len);
-        for (int i = 0; i < path.length(); i++) {
-            for (int j = 0; j < len + 6; j++)
-                buf.append(' ');
-            char c = ' ';
-            if (i == path.length() - 1)
-                c = '+';
-            else if (path.charAt(i) != path.charAt(i + 1))
-                c = '|';
-            buf.append(c);
-        }
-        buf.append("-- " + x.cle.toString());
-        if (x.gauche != null || x.droit != null) {
-            buf.append(" --");
-            for (int j = x.cle.toString().length(); j < len; j++)
-                buf.append('-');
-            buf.append('|');
-        }
-        buf.append("\n");
-        toString(x.gauche, buf, path + "G", len);
-    }
-
-    private int maxStrLen(Noeud x) {
-        return x == null ? 0 : Math.max(x.cle.toString().length(),
-                Math.max(maxStrLen(x.gauche), maxStrLen(x.droit)));
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return taille == 0;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return rechercher((E)o) != null;
-    }
-
-    @Override
-    public Object[] toArray() {
-        Object[] retour = new Object[taille];
-        recArray(racine, retour);
-        return retour;
-    }
-
-    private void recArray(Noeud n, Object[] t) {
-        if(n != null) {
-            recArray(n.gauche, t);
-            ajout(t, n);
-            recArray(n.droit, t);
-        }
-    }
-
-    private void ajout(Object[] t, Object o) {
-        int i;
-        for(i = 0; t[i] != null; ++i);
-        t[i] = o;
-    }
-
-    @Override
-    public boolean add(E e) {
-        Noeud x, y, z;
-
-        y = null;
-        x = racine;
-        while(x != null) {
-            y = x;
-            if(cmp.compare(e, (E) x.cle) < 0) x = x.gauche;
-            else x = x.droit;
-        }
-
-        z = new Noeud(e);
-        z.pere = y;
-        if(y == null) racine = z;
-        else if(cmp.compare(e, y.cle) < 0) y.gauche = z;
-        else y.droit = z;
-        z.gauche = z.droit = null;
-
-        taille++;
-        return true;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        Noeud z = rechercher((E)o);
-        if(z == null) return false;
-        supprimer(z);
-        return true;
-    }
-}*/
