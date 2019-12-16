@@ -499,8 +499,8 @@ public class ARN<E> extends AbstractCollection<E> {
                 c = '|';
             buf.append(c);
         }
-        if (x.couleur == 'R') buf.append("-- "+ ANSI_RED + x.cle.toString() + ANSI_RESET);
-        else buf.append("-- " + x.cle.toString());
+        if (x.couleur == 'R') buf.append("-- "+ ANSI_RED + "R|"+x.cle.toString() + ANSI_RESET);
+        else buf.append("-- " + "N|"+x.cle.toString());
         if (x.gauche != null || x.droit != null) {
             buf.append(" --");
             for (int j = x.cle.toString().length(); j < len; j++)
