@@ -277,13 +277,20 @@ public class ARN<E> extends AbstractCollection<E> {
      * La classe Iterateur de l'arbre pour pouvoir le parcourir
      */
     private class ABRIterator implements Iterator<E> {
-        Noeud n, p;
+        /**
+         * Noeud courant
+         */
+        Noeud n;
+        /**
+         * Noeud suivant
+         */
+        Noeud s;
 
         public ABRIterator() {
             super();
             n = sentinelle;
-            if (racine != sentinelle) p = racine.minimum();
-            else p = sentinelle;
+            if (racine != sentinelle) s = racine.minimum();
+            else s = sentinelle;
         }
 
         /**
@@ -292,7 +299,7 @@ public class ARN<E> extends AbstractCollection<E> {
          */
         @Override
         public boolean hasNext() {
-            return p != sentinelle;
+            return s != sentinelle;
         }
 
         /**
@@ -301,9 +308,9 @@ public class ARN<E> extends AbstractCollection<E> {
          */
         @Override
         public E next() {
-            if (p == null) throw new NoSuchElementException();
-            n = p;
-            p = p.suivant();
+            if (s == null) throw new NoSuchElementException();
+            n = s;
+            s = s.suivant();
             return n.cle;
         }
 
