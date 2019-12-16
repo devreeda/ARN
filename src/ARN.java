@@ -130,6 +130,59 @@ public class ARN<E> extends AbstractCollection<E> {
     }
 
     /**
+     * La classe Iterateur de l'arbre pour pouvoir le parcourir
+     */
+    private class ABRIterator implements Iterator<E> {
+        /**
+         * Noeud courant
+         */
+        Noeud n;
+        /**
+         * Noeud suivant
+         */
+        Noeud s;
+
+        public ABRIterator() {
+            super();
+            n = sentinelle;
+            if (racine != sentinelle) s = racine.minimum();
+            else s = sentinelle;
+        }
+
+        /**
+         * Vérifie si le Noeud possède un successeur
+         * @return retourne le successeur ou la sentinelle par défaut
+         */
+        @Override
+        public boolean hasNext() {
+            return s != sentinelle;
+        }
+
+        /**
+         * Surcharge de la méthode next de l'interface Iterator. Appelle la méthode suivant de la classe Noeud.
+         * @return L'élément suivant si il existe, une exception sinon
+         */
+        @Override
+        public E next() {
+            if (s == null) throw new NoSuchElementException();
+            n = s;
+            s = s.suivant();
+            return n.cle;
+        }
+
+        /**
+         * Surcharge de la méthode remove de l'interface Iterator.
+         * Appelle la méthode supprimer de la classe Noeud, renvoie une exception si l'élément est null.
+         */
+        @Override
+        public void remove() {
+            if (n == null) throw new IllegalStateException();
+            supprimer(n);
+            n = null;
+        }
+    }
+
+    /**
      * Constructueur par défaut, construit un arbre avec une sentinelle comme racine
      */
     public ARN() {
@@ -274,171 +327,6 @@ public class ARN<E> extends AbstractCollection<E> {
     }
 
     /**
-     * La classe Iterateur de l'arbre pour pouvoir le parcourir
-     */
-    private class ABRIterator implements Iterator<E> {
-        /**
-         * Noeud courant
-         */
-        Noeud n;
-        /**
-         * Noeud suivant
-         */
-        Noeud s;
-
-        public ABRIterator() {
-            super();
-            n = sentinelle;
-            if (racine != sentinelle) s = racine.minimum();
-            else s = sentinelle;
-        }
-
-        /**
-         * Vérifie si le Noeud possède un successeur
-         * @return retourne le successeur ou la sentinelle par défaut
-         */
-        @Override
-        public boolean hasNext() {
-            return s != sentinelle;
-        }
-
-        /**
-         * Surcharge de la méthode next de l'interface Iterator. Appelle la méthode suivant de la classe Noeud.
-         * @return L'élément suivant si il existe, une exception sinon
-         */
-        @Override
-        public E next() {
-            if (s == null) throw new NoSuchElementException();
-            n = s;
-            s = s.suivant();
-            return n.cle;
-        }
-
-        /**
-         * Surcharge de la méthode remove de l'interface Iterator.
-         * Appelle la méthode supprimer de la classe Noeud, renvoie une exception si l'élément est null.
-         */
-        @Override
-        public void remove() {
-            if (n == null) throw new IllegalStateException();
-            supprimer(n);
-            n = null;
-        }
-    }
-
-    // Pour un "joli" affichage
-
-    /**
-     * Affichage de l'arbre sans passer de paramètre.
-     * @return Un String de l'arbre complet
-     */
-    @Override
-    public String toString() {
-        StringBuffer buf = new StringBuffer();
-        toString(racine, buf, "", maxStrLen(racine));
-        return buf.toString();
-    }
-
-    /**
-     * Affichage de l'arbre en passant des parmètres
-     * @param x Racine du sous-arbre/arbre
-     * @param buf Le StringBuffer
-     * @param path Le chemin
-     * @param len La longueur de l'arbre
-     */
-    private void toString(Noeud x, StringBuffer buf, String path, int len) {
-        if (x == sentinelle)
-            return;
-        toString(x.droit, buf, path + "D", len);
-        for (int i = 0; i < path.length(); i++) {
-            for (int j = 0; j < len + 6; j++)
-                buf.append(' ');
-            char c = ' ';
-            if (i == path.length() - 1)
-                c = '+';
-            else if (path.charAt(i) != path.charAt(i + 1))
-                c = '|';
-            buf.append(c);
-        }
-        if (x.couleur == 'R') buf.append("-- "+ ANSI_RED + x.cle.toString() + ANSI_RESET);
-        else buf.append("-- " + x.cle.toString());
-        if (x.gauche != null || x.droit != null) {
-            buf.append(" --");
-            for (int j = x.cle.toString().length(); j < len; j++)
-                buf.append('-');
-            buf.append('|');
-        }
-        buf.append("\n");
-        toString(x.gauche, buf, path + "G", len);
-    }
-
-    /**
-     * Affiche la hauteur de l'arbre de racine x
-     * @param x La racine de l'arbre/sous-arbre
-     * @return La longueur max de l'arbre = sa hauteur
-     */
-    private int maxStrLen(Noeud x) {
-        return x == sentinelle ? 0 : Math.max(x.cle.toString().length(),
-                Math.max(maxStrLen(x.gauche), maxStrLen(x.droit)));
-    }
-
-    /**
-     * Vérifie si l'arbre est vide
-     * @return Un boolean égal à true si l'arbre est vide/la hauteur est nulle
-     */
-    @Override
-    public boolean isEmpty() {
-        return taille == 0;
-    }
-
-    /**
-     * Surcharge de la méthode contains de la classe abstraite AbstractCollection.
-     * Vérifie si l'arbre contient un Noeud passé en paramètre.
-     * @param o Un Noeud
-     * @return Un boolean égal à vrai si la recherche renvoie un Noeud non sentinelle.
-     */
-    @Override
-    public boolean contains(Object o) {
-        return rechercher((E) o) != sentinelle;
-    }
-
-    /**
-     * Surcharge de la méthode toArray de la classe abstraite AbstractCollection.
-     * Appelle la méthode privée recArray sur un Array de taille = hauteur de l'arbre.
-     * @return un tableau d'éléments
-     */
-    @Override
-    public Object[] toArray() {
-        Object[] retour = new Object[taille];
-        recArray(racine, retour);
-        return retour;
-    }
-
-    /**
-     * Ajoute les éléments de l'arbre dans un tableau dans l'ordre croissant du comparateur.
-     * @param n Un Noeud
-     * @param t Un tableau
-     */
-    private void recArray(Noeud n, Object[] t) {
-        if (n != sentinelle) {
-            recArray(n.gauche, t);
-            ajout(t, n);
-            recArray(n.droit, t);
-        }
-    }
-
-    /**
-     * Ajout de Noeud dans un tableau passé en paramètre
-     * @param t Tableau
-     * @param o Noeud
-     */
-    private void ajout(Object[] t, Object o) {
-        int i;
-        for (i = 0; t[i] != sentinelle; ++i) ;
-        t[i] = o;
-    }
-
-    /**
      * Méthode de rotation à gauche autour d'un noeud qui permet le recalibrage d'un ARN afin de respecter ses propriétés
      * lors de l'insertion ou de la suppression.
      * @param n Un Noeud
@@ -578,6 +466,118 @@ public class ARN<E> extends AbstractCollection<E> {
         if (z == sentinelle) return false;
         supprimer(z);
         return true;
+    }
+
+    // Pour un "joli" affichage
+
+    /**
+     * Affichage de l'arbre sans passer de paramètre.
+     * @return Un String de l'arbre complet
+     */
+    @Override
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        toString(racine, buf, "", maxStrLen(racine));
+        return buf.toString();
+    }
+
+    /**
+     * Affichage de l'arbre en passant des parmètres
+     * @param x Racine du sous-arbre/arbre
+     * @param buf Le StringBuffer
+     * @param path Le chemin
+     * @param len La longueur de l'arbre
+     */
+    private void toString(Noeud x, StringBuffer buf, String path, int len) {
+        if (x == sentinelle)
+            return;
+        toString(x.droit, buf, path + "D", len);
+        for (int i = 0; i < path.length(); i++) {
+            for (int j = 0; j < len + 6; j++)
+                buf.append(' ');
+            char c = ' ';
+            if (i == path.length() - 1)
+                c = '+';
+            else if (path.charAt(i) != path.charAt(i + 1))
+                c = '|';
+            buf.append(c);
+        }
+        if (x.couleur == 'R') buf.append("-- "+ ANSI_RED + x.cle.toString() + ANSI_RESET);
+        else buf.append("-- " + x.cle.toString());
+        if (x.gauche != null || x.droit != null) {
+            buf.append(" --");
+            for (int j = x.cle.toString().length(); j < len; j++)
+                buf.append('-');
+            buf.append('|');
+        }
+        buf.append("\n");
+        toString(x.gauche, buf, path + "G", len);
+    }
+
+    /**
+     * Affiche la hauteur de l'arbre de racine x
+     * @param x La racine de l'arbre/sous-arbre
+     * @return La longueur max de l'arbre = sa hauteur
+     */
+    private int maxStrLen(Noeud x) {
+        return x == sentinelle ? 0 : Math.max(x.cle.toString().length(),
+                Math.max(maxStrLen(x.gauche), maxStrLen(x.droit)));
+    }
+
+    /**
+     * Vérifie si l'arbre est vide
+     * @return Un boolean égal à true si l'arbre est vide/la hauteur est nulle
+     */
+    @Override
+    public boolean isEmpty() {
+        return taille == 0;
+    }
+
+    /**
+     * Surcharge de la méthode contains de la classe abstraite AbstractCollection.
+     * Vérifie si l'arbre contient un Noeud passé en paramètre.
+     * @param o Un Noeud
+     * @return Un boolean égal à vrai si la recherche renvoie un Noeud non sentinelle.
+     */
+    @Override
+    public boolean contains(Object o) {
+        return rechercher((E) o) != sentinelle;
+    }
+
+    /**
+     * Surcharge de la méthode toArray de la classe abstraite AbstractCollection.
+     * Appelle la méthode privée recArray sur un Array de taille = hauteur de l'arbre.
+     * @return un tableau d'éléments
+     */
+    @Override
+    public Object[] toArray() {
+        Object[] retour = new Object[taille];
+        recArray(racine, retour);
+        return retour;
+    }
+
+    /**
+     * Ajoute les éléments de l'arbre dans un tableau dans l'ordre croissant du comparateur.
+     * @param n Un Noeud
+     * @param t Un tableau
+     */
+    private void recArray(Noeud n, Object[] t) {
+        if (n != sentinelle) {
+            recArray(n.gauche, t);
+            ajout(t, n);
+            recArray(n.droit, t);
+        }
+    }
+
+    /**
+     * Ajout de Noeud dans un tableau passé en paramètre
+     * @param t Tableau
+     * @param o Noeud
+     */
+    private void ajout(Object[] t, Object o) {
+        int i;
+        for (i = 0; t[i] != sentinelle; ++i) ;
+        t[i] = o;
     }
 
 }
