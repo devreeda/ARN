@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * <h1>IMPLANTATION DE L'ARBRE ROUGE ET NOIR PAR RIDA GHOUTI TERKI & THOMAS PERONNY</h1>
+ * <h1>IMPLANTATION DE L'ARBRE ROUGE ET NOIR</h1>
+ * <h3>Par GHOUTI TERKI Rida et PERONNY Thomas</h3>
  * <p>
  * Implantation de l'interface Collection basée sur les arbres rouge et noirs.
  * Les éléments sont ordonnés soit en utilisant l'ordre naturel (cf
