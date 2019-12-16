@@ -5,15 +5,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
+ * <h1>IMPLANTATION DE L'ARBRE ROUGE ET NOIR PAR RIDA GHOUTI TERKI & THOMAS PERONNY</h1>
  * <p>
- * Implantation de l'interface Collection basée sur les arbres binaires de
- * recherche. Les éléments sont ordonnés soit en utilisant l'ordre naturel (cf
+ * Implantation de l'interface Collection basée sur les arbres rouge et noirs.
+ * Les éléments sont ordonnés soit en utilisant l'ordre naturel (cf
  * Comparable) soit avec un Comparator fourni à la création.
- * </p>
- *
- * <p>
- * Certaines méthodes de AbstractCollection doivent être surchargées pour plus
- * d'efficacité.
  * </p>
  *
  * @param <E> le type des clés stockées dans l'arbre
