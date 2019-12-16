@@ -22,8 +22,8 @@ public class ARN<E> extends AbstractCollection<E> {
     /**
      * Permettent de colorier en rouge les noeuds correspondants.
      */
-    public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     /**
      * Taille de l'arbre
@@ -53,15 +53,30 @@ public class ARN<E> extends AbstractCollection<E> {
      */
     private class Noeud {
 
+        /**
+         * Cle du noeud qui permet l'insertion, la suppression ou la recherche de l'élément.
+         */
         E cle;
+        /**
+         * Fils gauche du noeud
+         */
         Noeud gauche;
+        /**
+         * Fils droit du noeud
+         */
         Noeud droit;
+        /**
+         * Père du noeud
+         */
         Noeud pere;
+        /**
+         * Couleur du noeud (rouge ou noir)
+         */
         char couleur;
 
         /**
          * Constructeur par la clé, celui que l'on utilisera pour insérer un noeud
-         * @param cle
+         * @param cle Clé du noeud
          */
         Noeud(E cle) {
             pere = droit = gauche = sentinelle;
@@ -71,7 +86,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
         /**
          * Donne l'élément avec la clé maximale
-         * @return
+         * @return Le noeud ayant la clé maximale
          */
         Noeud maximum() {
             Noeud n = this;
@@ -81,7 +96,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
         /**
          * Donne l'élément avec la clé minimale
-         * @return
+         * @return Le noeud ayant la clé minimale
          */
         Noeud minimum() {
             Noeud n = this;
@@ -91,7 +106,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
         /**
          * Donne le noeud qui suit la clé de this / du Noeud appelant
-         * @return
+         * @return Le noeud suivant
          */
         Noeud suivant() {
             Noeud x = this;
@@ -104,6 +119,10 @@ public class ARN<E> extends AbstractCollection<E> {
             return y;
         }
 
+        /**
+         * Affiche la clé
+         * @return un String de la clé
+         */
         @Override
         public String toString() {
             return cle.toString();
@@ -122,7 +141,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
     /**
      * Constructeur par comparator, si on veut personnaliser la relation d'ordre
-     * @param cmp
+     * @param cmp comparateur
      */
     public ARN(Comparator<? super E> cmp) {
         sentinelle = new Noeud(null);
@@ -133,7 +152,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
     /**
      * Constructeur avec une collection d'éléments en paramètre, que l'on ajoute dans l'arbre en tant que clé
-     * @param c
+     * @param c collection d'élément
      */
     public ARN(Collection<? extends E> c) {
         this();
@@ -196,7 +215,7 @@ public class ARN<E> extends AbstractCollection<E> {
 
     /**
      * Corrige la structure de l'arbre de sorte à ce qu'il garde ses propriétés d'arbre rouge et noir
-     * @param x
+     * @param x Noeud autour duquel il faut corriger la suppression
      */
     private void suppressionCorrection(Noeud x) {
         Noeud w;
@@ -379,7 +398,7 @@ public class ARN<E> extends AbstractCollection<E> {
     /**
      * Surcharge de la méthode toArray de la classe abstraite AbstractCollection.
      * Appelle la méthode privée recArray sur un Array de taille = hauteur de l'arbre.
-     * @return
+     * @return un tableau d'éléments
      */
     @Override
     public Object[] toArray() {
